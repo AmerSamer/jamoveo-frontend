@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { signUp } from '../../services/authService';
-import { useDispatch } from 'react-redux';
-// import { setUser } from '../../features/auth/authSlice';
 import '../signup/Signup.css'
 import signupImg from '../../assets/signup.svg'
 import { useNavigate } from 'react-router-dom';
@@ -10,8 +8,6 @@ import { useCreateAdminUserMutation } from "../../services/userApi";
 export default function SignupAdmin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-//   const [instrument, setInstrument] = useState('');
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [createAdminUser, { isLoading }] = useCreateAdminUserMutation();
 

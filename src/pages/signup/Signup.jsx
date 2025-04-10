@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { signUp } from '../../services/authService';
 import { useDispatch } from 'react-redux';
-// import { setUser } from '../../features/auth/authSlice';
 import './Signup.css'
 import signupImg from '../../assets/signup.svg'
 import { useNavigate } from 'react-router-dom';
-import { useCreateUserMutation, useGetInstrumentsQuery } from "../../services/userApi";
+import { useCreateUserMutation } from "../../services/userApi";
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -14,7 +13,6 @@ export default function Signup() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [createUser, { isLoading }] = useCreateUserMutation();
-  // const { data: instruments, isLoading: instrumentLoading, error: instrumentError } = useGetInstrumentsQuery();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -57,11 +55,6 @@ export default function Signup() {
             required
           >
             <option value="">Select your instrument</option>
-            {/* {instruments?.map((inst) => (
-              <option key={inst} value={inst}>
-                {inst}
-              </option>
-            ))} */}
             <option>drums</option>
             <option>guitars</option>
             <option>bass</option>

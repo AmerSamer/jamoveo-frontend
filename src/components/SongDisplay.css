@@ -1,0 +1,29 @@
+.song-display {
+    font-size: 22px;
+    line-height: 1.8;
+  }
+  
+  .song-line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-bottom: 16px;
+  }
+  
+  .word-block {
+    text-align: center;
+    margin-left: 12px;
+    min-width: 50px;
+  }
+  
+  .chord {
+    color: #fbbf24; /* golden/yellowish */
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+  
+  .lyrics {
+    font-size: 22px;
+  }
+  

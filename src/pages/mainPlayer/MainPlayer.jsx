@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
-// import { signUp } from '../../services/authService';
-// import { useDispatch } from 'react-redux';
-// import { setUser } from '../../features/auth/authSlice';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+// import { socket } from "../../socket";
 import './MainPlayer.css'
-// import signupImg from '../../assets/signup.svg'
-// import { useNavigate } from 'react-router-dom';
 
-export default function MainPlayer() {
-    // const dispatch = useDispatch();
-    // const navigate = useNavigate();
+export default function MainPlayer({ user }) {
+    const [waiting, setWaiting] = useState(true);
+    const navigate = useNavigate();
+
+    // useEffect(() => {
+    //     socket.emit("join-room");
+
+    //     socket.on("load-song", (songData) => {
+    //         // Save song data in session or context if needed
+    //         navigate("/live", { state: { songData, role: user.instrument } });
+    //     });
+
+    //     socket.on("session-ended", () => {
+    //         setWaiting(true);
+    //     });
+
+    //     return () => {
+    //         socket.off("load-song");
+    //         socket.off("session-ended");
+    //     };
+    // }, [navigate, user.instrument]);
 
     return (
         <div className="main-container">
-            {/* Header */}
             <header className="header">
                 <div className="logo">JAMOVEO</div>
                 <div className="avatar">
@@ -31,12 +45,11 @@ export default function MainPlayer() {
                     </svg>
                 </div>
             </header>
-
-            {/* Center Box */}
             <div className="box">
                 <div className="note-icon">🎵</div>
                 <div className="waiting-text">Waiting for next song...</div>
             </div>
         </div>
     );
-}
+};
+

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Hey Jude",
+    "file": "Hey_Jude.json",
+    "artist": "The Beatles",
+    "img": "https://m.media-amazon.com/images/M/MV5BNjBlYjgzYTMtY2I2OS00YjE4LTk4ZTgtOTg2N2UwMWRmMjFlXkEyXkFqcGc@._V1_.jpg"
+  },
+  {
+    "name": "ואיך שלא",
+    "file": "Veech_Shelo.json",
+    "artist": "אריאל זילבר",
+    "img": "https://i.ytimg.com/vi/2GxJ_E4Alsw/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBNpUPCd0D2Syq1h-wu0eX84VrV2A"
+  }
+]
