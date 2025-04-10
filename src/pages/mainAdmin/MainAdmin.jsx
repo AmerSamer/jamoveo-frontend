@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { socket } from "../../socket";
+import { socket } from "../../socket/socket";
 import './MainAdmin.css';
+import { logOut } from "../../services/authService";
+import { useGetSongsQuery, useLazyGetSongQuery } from "../../services/songApi";
 
 export default function MainAdmin() {
     const [songs, setSongs] = useState([]);
     const [query, setQuery] = useState("");
     const [filtered, setFiltered] = useState([]);
     const navigate = useNavigate();
+    const { data, loading, error } = useGetSongsQuery();
+    const [getSong, { dataSong, isLoadingSong, errorSong }] = useLazyGetSongQuery();
 
     useEffect(() => {
-        // Load metadata from songList.json
-        fetch("/songs/songList.json")
-            .then(res => res.json())
-            .then(data => {
-                setSongs(data);
-                setFiltered(data); // show all initially
-            });
-    }, []);
+        socket.connect();
+        socket.emit("join-room");
+
+        if (data) {
+            setSongs(data.data);
+            setFiltered(data.data);
+        }
+    }, [data, loading, error]);
 
     const handleSearch = () => {
         const q = query.toLowerCase();
@@ -27,22 +31,33 @@ export default function MainAdmin() {
         setFiltered(results);
     };
     const handleSelectSong = async (song) => {
-        const res = await fetch(`/songs/${song.file}`);
-        const songContent = await res.json();
-        
-        const songData = {
-            name: song.name,
-            artist: song.artist,
-            content: songContent
-        };
+        try {
+            const newSong = await getSong(song.file);
+            const songData = {
+                name: song.name,
+                artist: song.artist,
+                content: newSong.data
+            };
 
-        // Broadcast song to players
-        // socket.emit("select-song", songData);
+            //Broadcast song to players
+            socket.emit("select-song", songData);
 
-        // Navigate to admin Live page
-        navigate("/live", {
-            state: { songData, role: "admin" }
-        });
+            //Navigate to admin Live page
+            navigate("/live", {
+                state: { songData, role: "admin" }
+            });
+        } catch (error) {
+            console.error("Failed to load song:", error);
+            alert("Could not load song.");
+        }
+    };
+    const handleLogout = async () => {
+        try {
+            await logOut();
+            navigate('/login');
+        } catch (err) {
+            alert(err);
+        }
     };
 
     return (
@@ -65,6 +80,11 @@ export default function MainAdmin() {
                     </svg>
                 </div>
             </header>
+            <div className="logout-div">
+                <button type="button" className="logout-button" onClick={() => handleLogout()}>
+                    Logout
+                </button>
+            </div>
             <main className="admin-main">
                 <div className="search-bar">
                     <input type="text" placeholder="Search any song..." value={query} onChange={(e) => setQuery(e.target.value)} />
@@ -72,7 +92,7 @@ export default function MainAdmin() {
                 </div>
 
                 <h2 className="section-title">Recommended song list</h2>
-                
+
                 <ul className="song-list">
                     {filtered.map((song, index) => (
                         <li className="song-item" key={index} onClick={() => handleSelectSong(song)}>

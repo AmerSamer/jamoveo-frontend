@@ -1,11 +1,11 @@
 import React from "react";
 import "./SongDisplay.css";
 
-const SongDisplay = ({ data, isSinger }) => {
+const SongDisplay = ({ name, data, isSinger }) => {
   return (
     <div className="song-display">
       {data.map((line, idx) => (
-        <div className="song-line" key={idx}>
+        <div className={name === "Hey Jude" ? "song-line" : "song-line song-line-rtl"} key={idx}>
           {line.map((word, wIdx) => (
             <div className="word-block" key={wIdx}>
               {!isSinger && word.chords && (

@@ -1,9 +1,8 @@
-// src/socket.js
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:8082", {
+const socket = io(`${import.meta.env.VITE_BASE_URL}`, {
   transports: ["websocket"],
-  autoConnect: false // prevent auto connect until needed
+  autoConnect: false
 });
 
 export { socket };

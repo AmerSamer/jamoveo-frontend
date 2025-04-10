@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SongDisplay from "../../components/SongDisplay";
-// import { socket } from "../../socket";
+import { socket } from "../../socket/socket";
 import './Live.css'
 
 const Live = () => {
@@ -27,9 +27,20 @@ const Live = () => {
     return () => clearInterval(scrollInterval);
   }, [autoScroll]);
 
+  useEffect(() => {
+    const handleSessionEnded = () => {
+      navigate(isAdmin ? "/mainadmin" : "/mainplayer");
+    };
+
+    socket.on("session-ended", handleSessionEnded);
+
+    return () => {
+      socket.off("session-ended", handleSessionEnded);
+    };
+  }, [navigate]);
+
   const handleQuit = () => {
-    // socket.emit("quit-session");
-    navigate(isAdmin ? "/mainadmin" : "/mainplayer");
+    socket.emit("quit-session");
   };
 
   return (
@@ -55,7 +66,7 @@ const Live = () => {
 
       <div className="song-container">
         <h2 className="song-title-live">{songData.name} – {songData.artist}</h2>
-        <SongDisplay data={songData.content} isSinger={isSinger} />
+        <SongDisplay name={songData.name} data={songData.content} isSinger={isSinger} />
       </div>
 
       <div className="song-btn-container">

@@ -1,29 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { socket } from "../../socket";
+import { socket } from "../../socket/socket";
 import './MainPlayer.css'
+import { useGetUserQuery } from "../../services/userApi";
+import { logOut } from "../../services/authService";
 
-export default function MainPlayer({ user }) {
+export default function MainPlayer() {
+    const { data, isLoading, error } = useGetUserQuery();
     const [waiting, setWaiting] = useState(true);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     socket.emit("join-room");
+    const instrument = data?.data?.instruments;
 
-    //     socket.on("load-song", (songData) => {
-    //         // Save song data in session or context if needed
-    //         navigate("/live", { state: { songData, role: user.instrument } });
-    //     });
+    useEffect(() => {
+        if (!instrument || isLoading) return;
 
-    //     socket.on("session-ended", () => {
-    //         setWaiting(true);
-    //     });
+        socket.connect();
+        socket.emit("join-room");
 
-    //     return () => {
-    //         socket.off("load-song");
-    //         socket.off("session-ended");
-    //     };
-    // }, [navigate, user.instrument]);
+        const handleLoadSong = (songData) => {
+            navigate("/live", { state: { songData, role: instrument } });
+        };
+
+        const handleSessionEnded = () => {
+            setWaiting(true);
+            alert("Session ended by admin");
+            navigate("/mainplayer");
+        };
+
+        socket.on("load-song", handleLoadSong);
+        socket.on("session-ended", handleSessionEnded);
+
+        return () => {
+            socket.off("load-song", handleLoadSong);
+            socket.off("session-ended", handleSessionEnded);
+        };
+    }, [instrument, isLoading, navigate]);
+    const handleLogout = async () => {
+        try {
+            await logOut();
+            navigate('/login');
+        } catch (err) {
+            alert(err);
+        }
+    };
 
     return (
         <div className="main-container">
@@ -45,6 +65,11 @@ export default function MainPlayer({ user }) {
                     </svg>
                 </div>
             </header>
+            <div className="logout-div">
+                <button type="button" className="logout-button" onClick={() => handleLogout()}>
+                    Logout
+                </button>
+            </div>
             <div className="box">
                 <div className="note-icon">🎵</div>
                 <div className="waiting-text">Waiting for next song...</div>

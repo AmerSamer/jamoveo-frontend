@@ -5,8 +5,14 @@ import { auth } from '../firebase/firebaseConfig';
 // Get token function (you can use AsyncStorage for persistence in React Native)
 const prepareHeaders = async (headers, { getState }) => {
   try {
+    let token;
     const currentUser = auth.currentUser;
-    const token = await getIdToken(currentUser);
+    if (currentUser) {
+      token = await getIdToken(currentUser);
+    } else {
+      token = localStorage.getItem("token");
+    }
+
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }

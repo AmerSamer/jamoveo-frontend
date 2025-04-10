@@ -6,6 +6,7 @@ import loginImg from '../../assets/login.svg'
 import { useLazyGetUserQuery } from "../../services/userApi";
 
 export default function Login() {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -50,13 +51,6 @@ export default function Login() {
                         className="input"
                         required
                     />
-                    <div className="checkbox-container">
-                        <label>
-                            <input type="checkbox" className="checkbox" />
-                            Remember me
-                        </label>
-                        <span className="forgot-password">Forgot Password?</span>
-                    </div>
                     <button type="submit" className="submit-button">
                         Log in
                     </button>

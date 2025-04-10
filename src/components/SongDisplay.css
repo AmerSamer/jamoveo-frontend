@@ -9,6 +9,9 @@
     justify-content: flex-start;
     margin-bottom: 16px;
   }
+  .song-line-rtl {
+    direction: rtl;
+  }
   
   .word-block {
     text-align: center;

@@ -24,6 +24,7 @@ export default function Signup() {
         };
         const userData = await createUser(payload).unwrap();
         if (userData && userData.data.role === 'player') {
+          localStorage.setItem("token", userData.accessToken);
           navigate('/mainplayer');
         } else if (userData && userData.data.role === 'admin') {
           navigate('/mainadmin');
@@ -60,7 +61,7 @@ export default function Signup() {
             <option>bass</option>
             <option>saxophone</option>
             <option>keyboards</option>
-            <option>vocals</option>
+            <option>singer</option>
           </select>
           <input
             type="password"
