@@ -1,3 +1,12 @@
+/**
+ * Signup.jsx
+ *
+ * A registration form for new players to join JaMoveo.
+ * - Creates a Firebase Auth user with email + password
+ * - Stores instrument info in the backend (MongoDB via RTK Query)
+ * - Redirects to appropriate main page based on role (default is "player")
+ */
+
 import React, { useState } from 'react';
 import { signUp } from '../../services/authService';
 import { useDispatch } from 'react-redux';
@@ -12,17 +21,29 @@ export default function Signup() {
   const [instrument, setInstrument] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // RTK Mutation to create user in your backend
   const [createUser, { isLoading }] = useCreateUserMutation();
 
+  /**
+   * Handles the signup process:
+   * 1. Creates Firebase Auth user
+   * 2. Registers instrument in MongoDB (via backend API)
+   * 3. Redirects to role-based dashboard
+   */
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
+      // Create Firebase user
       const data = await signUp(email, password);
       if (data) {
+        // Send instrument info to backend
         const payload = {
           instrument
         };
         const userData = await createUser(payload).unwrap();
+
+        // Redirect based on role
         if (userData && userData.data.role === 'player') {
           localStorage.setItem("token", userData.accessToken);
           navigate('/mainplayer');

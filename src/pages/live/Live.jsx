@@ -1,3 +1,13 @@
+/**
+ * Live.jsx
+ *
+ * Displays the selected song (lyrics & chords) in real-time to all participants.
+ * - Players see lyrics (and chords unless they are singers)
+ * - Admin can quit the session
+ * - All users can auto-scroll the lyrics
+ * - Listens for "session-ended" via Socket.IO to return to the main screen
+ */
+
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SongDisplay from "../../components/SongDisplay";
@@ -7,6 +17,8 @@ import './Live.css'
 const Live = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Extract song and role from navigation state
   const { songData, role } = location.state || {};
   const [autoScroll, setAutoScroll] = useState(false);
   const [scrollInterval, setScrollInterval] = useState(null);
@@ -14,6 +26,10 @@ const Live = () => {
   const isSinger = role === "singer";
   const isAdmin = role === "admin";
 
+  /**
+   * Auto-scroll functionality
+   * Scrolls down the page every 50ms when enabled
+   */
   useEffect(() => {
     if (autoScroll) {
       const interval = setInterval(() => {
@@ -27,6 +43,10 @@ const Live = () => {
     return () => clearInterval(scrollInterval);
   }, [autoScroll]);
 
+  /**
+  * Socket listener: session-ended
+  * If the admin ends the session, redirect users to their main screen
+  */
   useEffect(() => {
     const handleSessionEnded = () => {
       navigate(isAdmin ? "/mainadmin" : "/mainplayer");
@@ -39,6 +59,9 @@ const Live = () => {
     };
   }, [navigate]);
 
+  /**
+   * Admin-only: Emit quit-session to end the session for all users
+   */
   const handleQuit = () => {
     socket.emit("quit-session");
   };

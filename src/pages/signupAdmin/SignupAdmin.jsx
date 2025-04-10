@@ -1,3 +1,12 @@
+/**
+ * SignupAdmin.jsx
+ *
+ * Allows a new admin user to register for JaMoveo.
+ * - Uses Firebase Auth for email/password registration
+ * - Sends a backend request to flag the user as an admin
+ * - Redirects to role-specific dashboard based on backend response
+ */
+
 import React, { useState } from 'react';
 import { signUp } from '../../services/authService';
 import '../signup/Signup.css'
@@ -9,14 +18,24 @@ export default function SignupAdmin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  // RTK mutation hook to register admin in backend
   const [createAdminUser, { isLoading }] = useCreateAdminUserMutation();
 
+  /**
+  * Handles admin registration:
+  * 1. Creates Firebase Auth user with email/password
+  * 2. Calls backend to mark user as admin
+  * 3. Navigates to appropriate dashboard
+  */
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       const data = await signUp(email, password);
       if (data) {
+        // Register admin role in backend
         const userData = await createAdminUser().unwrap();
+        // Redirect based on role from backend response
         if (userData && userData.data.role === 'player') {
           navigate('/mainplayer');
         } else if (userData && userData.data.role === 'admin') {

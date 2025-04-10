@@ -1,8 +1,25 @@
+/**
+ * RTK Query: Song API Service
+ *
+ * This file configures all song-related API requests using Redux Toolkit Query.
+ * It also attaches a Firebase ID token (if available) to secure API requests.
+ * 
+ * Features:
+ * - Auto-generates React hooks for fetching songs
+ * - Handles caching, loading, and error states automatically
+ * - Uses Firebase Auth for token-based auth headers
+ */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getIdToken } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
 
-// Get token function (you can use AsyncStorage for persistence in React Native)
+/**
+ * prepareHeaders
+ * Attaches a Firebase ID token (if available) to the request headers.
+ *
+ * @param {Headers} headers - Request headers
+ * @returns {Headers} Modified headers with `Authorization` if authenticated
+ */
 const prepareHeaders = async (headers, { getState }) => {
     try {
         let token;
@@ -22,26 +39,29 @@ const prepareHeaders = async (headers, { getState }) => {
     }
 };
 
+// ✅ Create the song API service
 export const songApi = createApi({
     reducerPath: 'songApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `${import.meta.env.VITE_BASE_URL}/api/song`, // Change to your server's base URL
+        baseUrl: `${import.meta.env.VITE_BASE_URL}/api/song`,
         prepareHeaders, // Attach token to headers
     }),
     tagTypes: ["Song"], // Define a generic tag
     endpoints: (builder) => ({
-        // Define an endpoint for fetching a user by ID
+        // Define an endpoint for fetching all songs
         getSongs: builder.query({
             query: () => '/songs',
             transformResponse: (response) => response, // Optional: transform the API response
-            providesTags: ["Song"], // Mark this query with "User" tag
+            providesTags: ["Song"], // Mark this query with "Song" tag
         }),
+        // Define an endpoint for fetching a song by file name
         getSong: builder.query({
             query: (file) => `/song/${file}`,
             transformResponse: (response) => response, // Optional: transform the API response
-            providesTags: ["Song"], // Mark this query with "User" tag
+            providesTags: ["Song"], // Mark this query with "Song" tag
         }),
     }),
 });
 
+// ✅ Auto-generated React hooks
 export const { useGetSongsQuery, useLazyGetSongQuery } = songApi;

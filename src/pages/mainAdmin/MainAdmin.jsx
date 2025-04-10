@@ -1,3 +1,13 @@
+/**
+ * MainAdmin.jsx
+ *
+ * The main page for the admin role.
+ * - Admins can search songs by name or artist
+ * - Select a song to broadcast to connected users via socket
+ * - Automatically navigates to the Live page upon song selection
+ * - Includes logout functionality and token/session cleanup
+ */
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../../socket/socket";
@@ -10,9 +20,16 @@ export default function MainAdmin() {
     const [query, setQuery] = useState("");
     const [filtered, setFiltered] = useState([]);
     const navigate = useNavigate();
+
+    // Fetch all song metadata (name, artist, file, img)
     const { data, loading, error } = useGetSongsQuery();
+
+    // Lazy load individual song file (lyrics + chords)
     const [getSong, { dataSong, isLoadingSong, errorSong }] = useLazyGetSongQuery();
 
+    /**
+      * Initialize socket connection and fetch song list
+      */
     useEffect(() => {
         socket.connect();
         socket.emit("join-room");
@@ -23,6 +40,9 @@ export default function MainAdmin() {
         }
     }, [data, loading, error]);
 
+    /**
+       * Filter the list of songs by name or artist
+       */
     const handleSearch = () => {
         const q = query.toLowerCase();
         const results = songs.filter((s) =>
@@ -30,6 +50,13 @@ export default function MainAdmin() {
         );
         setFiltered(results);
     };
+
+    /**
+       * Handles when admin selects a song to broadcast
+       * - Loads full song content from backend
+       * - Emits `select-song` to all connected clients
+       * - Navigates to `/live` page with song data
+       */
     const handleSelectSong = async (song) => {
         try {
             const newSong = await getSong(song.file);
@@ -51,6 +78,10 @@ export default function MainAdmin() {
             alert("Could not load song.");
         }
     };
+    
+    /**
+       * Logout admin and clear token
+       */
     const handleLogout = async () => {
         try {
             await logOut();

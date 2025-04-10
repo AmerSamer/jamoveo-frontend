@@ -1,3 +1,13 @@
+/**
+ * MainPlayer.jsx
+ *
+ * This is the main landing page for a player after login.
+ * - Shows "Waiting for next song..." until an admin selects a song.
+ * - Listens for `load-song` socket event and redirects to the Live page with song data.
+ * - Listens for `session-ended` event and shows an alert.
+ * - Allows the player to logout.
+ */
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../../socket/socket";
@@ -10,8 +20,14 @@ export default function MainPlayer() {
     const [waiting, setWaiting] = useState(true);
     const navigate = useNavigate();
 
+    // Instrument is used as a role indicator in Live page (e.g., 'singer')
     const instrument = data?.data?.instruments;
 
+    /**
+      * Setup socket connection and event listeners
+      * - When admin broadcasts a song (`load-song`), redirect to Live screen
+      * - If session is ended (`session-ended`), alert and redirect back here
+      */
     useEffect(() => {
         if (!instrument || isLoading) return;
 
@@ -36,6 +52,10 @@ export default function MainPlayer() {
             socket.off("session-ended", handleSessionEnded);
         };
     }, [instrument, isLoading, navigate]);
+    
+    /**
+      * Logout function clears Firebase session and redirects to login
+      */
     const handleLogout = async () => {
         try {
             await logOut();

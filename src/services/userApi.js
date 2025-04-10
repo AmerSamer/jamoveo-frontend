@@ -1,8 +1,26 @@
+/**
+ * RTK Query: User API Service
+ *
+ * Handles all user-related API calls using Redux Toolkit Query.
+ * Integrates Firebase authentication by attaching the ID token
+ * to every request in the `Authorization` header.
+ *
+ * Endpoints:
+ * - getUser          → Get current user from backend
+ * - createUser       → Register new player
+ * - createAdminUser  → Register new admin
+ * - getInstruments   → Get available instruments (public)
+ */
+
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getIdToken } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
 
-// Get token function (you can use AsyncStorage for persistence in React Native)
+/**
+ * prepareHeaders
+ * Attaches Firebase ID token (if available) to request headers.
+ * Useful for securing backend APIs.
+ */
 const prepareHeaders = async (headers, { getState }) => {
   try {
     let token;
@@ -22,21 +40,22 @@ const prepareHeaders = async (headers, { getState }) => {
   }
 };
 
+// ✅ Create the user API service
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_URL}/api/user`, // Change to your server's base URL
+    baseUrl: `${import.meta.env.VITE_BASE_URL}/api/user`,
     prepareHeaders, // Attach token to headers
   }),
   tagTypes: ["User"], // Define a generic tag
   endpoints: (builder) => ({
-    // Define an endpoint for fetching a user by ID
+    // Define an endpoint for fetching a user
     getUser: builder.query({
       query: () => '/user',
       transformResponse: (response) => response, // Optional: transform the API response
       providesTags: ["User"], // Mark this query with "User" tag
     }),
-    // Define an endpoint for updating user
+    // Define an endpoint for creating user
     createUser: builder.mutation({
       query: (data) => ({
         url: '/user',
@@ -45,6 +64,7 @@ export const userApi = createApi({
       }),
       invalidatesTags: ["User"], // Invalidate "User" tag to trigger a refetch
     }),
+    // Define an endpoint for creating admin user
     createAdminUser: builder.mutation({
       query: (data) => ({
         url: '/userAdmin',
@@ -52,12 +72,13 @@ export const userApi = createApi({
       }),
       invalidatesTags: ["User"], // Invalidate "User" tag to trigger a refetch
     }),
+    // Define an endpoint for getting the instruments list
     getInstruments: builder.query({
       query: () => '/instruments',
-      headers: { skipAuth: 'true' },
       transformResponse: (response) => response, // Optional: transform the API response
     }),
   }),
 });
 
+// ✅ Export generated hooks
 export const { useGetUserQuery, useLazyGetUserQuery, useCreateUserMutation, useCreateAdminUserMutation, useGetInstrumentsQuery } = userApi;

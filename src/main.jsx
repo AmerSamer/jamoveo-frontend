@@ -1,3 +1,11 @@
+/**
+ * Application Entry Point
+ *
+ * - Renders the root React app into the DOM
+ * - Wraps the app in Redux Provider for global state
+ * - Uses React Router for client-side routing
+ */
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
