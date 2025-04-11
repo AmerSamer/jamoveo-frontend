@@ -64,6 +64,7 @@ const Live = () => {
    */
   const handleQuit = () => {
     socket.emit("quit-session");
+    navigate("/mainadmin");
   };
 
   return (
